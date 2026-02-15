@@ -4,8 +4,18 @@ import bcrypt from "bcryptjs";
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  credits: { type: Number, default: 20 },
+  // password: { type: String, required: true },
+
+  googleId: {   // 👈 ADD THIS
+    type: String
+  },
+  password: {
+    type: String,
+    required: function () {
+      return !this.googleId; 
+    }
+  },
+  credits: { type: Number, default: 30 },
 });
 
 userSchema.pre("save", async function () {

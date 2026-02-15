@@ -26,28 +26,111 @@ export const textMessageController = async (req, res) => {
       isImage: false
     })
 
-    const {choices} = await openai.chat.completions.create({
-    model: "gemini-3-flash-preview",
-    messages: [
-        {   role: "system",
-            content: "You are a helpful assistant." 
-        },
-        {
-            role: "user",
-            content: "Explain to me how AI works",
-        },
-    ],
+    const lowerPrompt = prompt.toLowerCase();
+
+if (lowerPrompt.includes("time") && lowerPrompt.includes("india")) {
+
+  const nowUTC = new Date();
+
+  // Convert UTC to IST (UTC + 5:30)
+  const istTime = new Date(nowUTC.getTime() + (5.5 * 60 * 60 * 1000));
+
+  const formattedTime = istTime.toLocaleString("en-IN", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+
+  const reply = {
+    role: "assistant",
+    content: `Current time in India (IST):\n${formattedTime}`,
+    timestamp: Date.now(),
+    isImage: false
+  };
+
+  res.json({ success: true, reply });
+
+  chat.messages.push(reply);
+  await chat.save();
+
+  return;
+}
+
+
+const now = new Date();
+
+const currentTimeIST = new Intl.DateTimeFormat("en-IN", {
+  timeZone: "Asia/Kolkata",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: true
+}).format(now);
+
+   const today = new Date().toDateString();
+
+// Take last 10 messages only (cost control)
+const history = chat.messages.slice(-10).map(msg => ({
+  role: msg.role,
+  content: msg.content
+}));
+
+const messages = [
+  {
+    role: "system",
+    content: `
+You are a highly intelligent and professional AI assistant.
+
+Current Date: ${today}
+Current Time (India IST): ${currentTimeIST}
+
+Rules:
+- If coding is asked, return clean and working code only.
+- If explanation is asked, use simple and clear language.
+- If math is asked, show step-by-step solution.
+- If greeting, respond in a friendly way.
+- Always use the provided current date and time if asked.
+- Avoid unnecessary long answers.
+- Stay accurate and confident.
+
+Always provide structured and high-quality responses.
+`
+  },
+  ...history
+];
+
+
+const { choices } = await openai.chat.completions.create({
+  model: "gemini-3-flash-preview",
+  temperature: 0.3,
+  max_tokens: 1000,
+  messages
 });
 
-
-
-
-
 const reply = {
-  ...choices[0].message,
+  role: "assistant",
+  content: choices[0].message.content,
   timestamp: Date.now(),
   isImage: false
 };
+
+
+
+
+
+
+
+
+// const reply = {
+//   ...choices[0].message,
+//   timestamp: Date.now(),
+//   isImage: false
+// };
 
 res.json({ success: true, reply });
 
@@ -136,3 +219,4 @@ await User.updateOne(
 
   }
 };
+

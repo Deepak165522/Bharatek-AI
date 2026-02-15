@@ -10,14 +10,18 @@ export const protect = async (req, res, next) => {
   );
 
   try {
-    const token = req.headers.authorization;
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
+    if (!authHeader) {
       return res.status(401).json({
         success: false,
         message: "No token provided",
       });
     }
+
+    const token = authHeader.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : authHeader;
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
@@ -31,6 +35,7 @@ export const protect = async (req, res, next) => {
 
     req.user = user;
     next();
+
   } catch (error) {
     return res.status(401).json({
       success: false,
@@ -38,4 +43,3 @@ export const protect = async (req, res, next) => {
     });
   }
 };
-

@@ -40,6 +40,11 @@ export const stripeWebhookController = async (request, response) => {
             isPaid: false
           });
 
+          // 🔥 Add this safety check
+if (!transaction) {
+  return response.json({ received: true });
+}
+
           await User.updateOne(
             { _id: transaction.userId },
             { $inc: { credits: transaction.credits } }
