@@ -25,7 +25,8 @@ userRouter.get("/auth/google/callback",
     { expiresIn: "7d" }
   );
 
-  res.redirect(`http://localhost:5173/google-success?token=${token}`);
+  res.redirect(`${process.env.CLIENT_URL}/google-success?token=${token}`);
+
 }
 );
 
