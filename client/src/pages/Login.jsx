@@ -298,27 +298,27 @@ return (
 
 <button
   type="button"
- onClick={() => 
-  window.location.href = 
-  `${import.meta.env.VITE_SERVER_URL}/api/user/auth/google`
-}
-
+  onClick={() =>
+    window.location.href =
+      `${import.meta.env.VITE_SERVER_URL}/api/user/auth/google`
+  }
   className="
     w-full py-3 rounded-xl
-    bg-white text-black
     font-medium
     flex items-center justify-center gap-3
-    hover:bg-gray-200
     transition-all duration-300
+
+    bg-white text-gray-800 border border-gray-300
+    hover:bg-gray-100 hover:shadow-md
+
+    dark:bg-white/10 dark:text-white dark:border-white/20
+    dark:hover:bg-white/20 dark:hover:shadow-lg
   "
 >
-  <img
-    src="https://www.svgrepo.com/show/475656/google-color.svg"
-    alt="google"
-    className="w-5 h-5"
-  />
+  <FcGoogle size={20} />
   Continue with Google
 </button>
+
 
     </form>
 
