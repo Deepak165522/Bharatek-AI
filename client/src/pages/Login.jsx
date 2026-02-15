@@ -298,7 +298,11 @@ return (
 
 <button
   type="button"
-  onClick={() => window.location.href = "http://localhost:3000/api/user/auth/google"}
+ onClick={() => 
+  window.location.href = 
+  `${import.meta.env.VITE_SERVER_URL}/api/user/auth/google`
+}
+
   className="
     w-full py-3 rounded-xl
     bg-white text-black
